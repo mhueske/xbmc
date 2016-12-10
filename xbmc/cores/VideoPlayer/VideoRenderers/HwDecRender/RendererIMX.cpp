@@ -191,11 +191,7 @@ bool CRendererIMX::RenderUpdateVideoHook(bool clear, DWORD flags, DWORD alpha)
     g_IMXContext.SetBlitRects(srcRect, dstRect);
 
     uint8_t fieldFmt = flags & RENDER_FLAG_FIELDMASK;
-
-    if (!g_graphicsContext.IsFullScreenVideo())
-      flags &= ~RENDER_FLAG_FIELDS;
-
-    if (flags & RENDER_FLAG_FIELDS)
+    if (flags & RENDER_FLAG_FIELDS && g_graphicsContext.IsFullScreenVideo())
     {
       fieldFmt |= IPU_DEINTERLACE_RATE_EN;
       if (flags & RENDER_FLAG_FIELD1)
