@@ -1718,17 +1718,13 @@ void CIMXContext::PrepareTask(IPUTaskPtr &ipu, CIMXBuffer *source_p, CIMXBuffer 
 
 bool CIMXContext::TileTask(IPUTaskPtr &ipu)
 {
-  int pad = ipu->task.input.height == 1080 && ipu->current->iHeight>ipu->task.input.height ? 8*ipu->current->iWidth : 0;
-
   if (ipu->current->iFormat != _4CC('T', 'N', 'V', 'F') && ipu->current->iFormat != _4CC('T', 'N', 'V', 'P'))
   {
     if (ipu->task.input.deinterlace.enable && ipu->task.input.deinterlace.motion != HIGH_MOTION)
     {
       ipu->task.input.paddr_n = ipu->task.input.paddr;
-      ipu->task.input.paddr   = ipu->previous->pPhysAddr + pad;
+      ipu->task.input.paddr   = ipu->previous->pPhysAddr;
     }
-    else
-      ipu->task.input.paddr  += pad;
     return true;
   }
 
@@ -1737,7 +1733,7 @@ bool CIMXContext::TileTask(IPUTaskPtr &ipu)
   {
     ipu->task.output.crop.pos.x = ipu->task.input.crop.pos.x = 0;
     ipu->task.output.crop.pos.y = ipu->task.input.crop.pos.y = 0;
-    ipu->task.output.crop.h     = ipu->task.input.height     = ipu->task.input.crop.h = ipu->current->iHeight;
+    ipu->task.output.crop.h     = ipu->task.input.crop.h = ipu->current->iHeight;
     ipu->task.output.paddr     += m_fbLineLength * (m_fbHeight - ipu->task.input.crop.h)/2;
 
     return true;
@@ -1780,8 +1776,8 @@ bool CIMXContext::TileTask(IPUTaskPtr &ipu)
   if (ioctl(m_ipuHandle, IPU_QUEUE_TASK, &vdoa) < 0)
     return false;
 
-  ipu->task.input.paddr   = vdoa.output.paddr + pad;
-  ipu->task.input.format  = vdoa.output.format;
+  ipu->task.input.paddr  = vdoa.output.paddr;
+  ipu->task.input.format = vdoa.output.format;
   if (ipu->task.input.deinterlace.enable && ipu->task.input.deinterlace.motion != HIGH_MOTION && ipu->previous)
   {
     ipu->task.input.paddr_n = ipu->task.input.paddr;
@@ -1802,7 +1798,7 @@ bool CIMXContext::DoTask(IPUTaskPtr &ipu, CRect *dest)
 
   // Populate input block
   ipu->task.input.width   = ipu->current->iWidth;
-  ipu->task.input.height  = std::min(ipu->current->iHeight, (unsigned int)1080);
+  ipu->task.input.height  = ipu->current->iHeight;
   ipu->task.input.format  = ipu->current->iFormat;
   ipu->task.input.paddr   = ipu->current->pPhysAddr;
 
