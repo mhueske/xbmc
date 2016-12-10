@@ -23,7 +23,6 @@
 #include "threads/Event.h"
 #include "threads/Thread.h"
 #include "guilib/DispResource.h"
-#include "utils/log.h"
 
 #include <mutex>
 #include <queue>
@@ -31,9 +30,6 @@
 #include <algorithm>
 #include <atomic>
 #include <thread>
-#include <map>
-
-#define DIFFRINGSIZE 60
 
 class CIMX;
 extern CIMX g_IMX;
@@ -186,22 +182,3 @@ protected:
   std::atomic<long> m_iRefs;
 };
 
-class CIMXFps
-{
-  public:
-    CIMXFps()       { Flush(); }
-    void   Add(double pts);
-    void   Flush(); //flush the saved pattern and the ringbuffer
-
-    double GetFrameDuration() { return m_frameDuration;             }
-    bool   HasFullBuffer()    { return m_ts.size() == DIFFRINGSIZE; }
-
-    bool   Recalc();
-
-  private:
-    std::deque<double>   m_ts;
-    std::map<double,int> m_hgraph;
-    double               m_frameDuration;
-    bool                 m_hasPattern;
-    double               m_ptscorrection;
-};
