@@ -43,7 +43,9 @@ public:
 
   // Feature support
   virtual bool Supports(EINTERLACEMETHOD method);
+  virtual bool Supports(EDEINTERLACEMODE mode);
   virtual bool Supports(ESCALINGMETHOD method);
+  
 
   virtual EINTERLACEMETHOD AutoInterlaceMethod();
   virtual CRenderInfo GetRenderInfo();
