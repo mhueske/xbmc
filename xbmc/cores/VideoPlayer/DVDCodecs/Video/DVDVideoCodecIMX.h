@@ -135,9 +135,6 @@ public:
 
   void OnResetDisplay();
 
-  void create() { Create(); m_onStartup.Wait(); }
-  CEvent m_onStartup;
-
   static const int  m_fbPages;
 
 private:

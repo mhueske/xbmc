@@ -1230,8 +1230,6 @@ CIMXContext::CIMXContext()
   , m_bufferCapture(NULL)
   , m_deviceName("/dev/fb1")
 {
-  m_waitVSync.Reset();
-  m_onStartup.Reset();
   m_input.clear();
   m_input.setquotasize(m_fbPages);
   m_pageCrops = new CRectInt[m_fbPages];
@@ -1240,6 +1238,7 @@ CIMXContext::CIMXContext()
   SetBlitRects(CRectInt(), CRectInt());
 
   g2dOpenDevices();
+  Create();
 }
 
 CIMXContext::~CIMXContext()
@@ -1930,16 +1929,12 @@ bool CIMXContext::CaptureDisplay(unsigned char *&buffer, int iWidth, int iHeight
 
 void CIMXContext::OnStartup()
 {
-  g_Windowing.Register(this);
-
-  CSingleLock lk(m_pageSwapLock);
-
   OpenDevices();
 
   AdaptScreen(true);
   AdaptScreen();
 
-  m_onStartup.Set();
+  g_Windowing.Register(this);
   CLog::Log(LOGNOTICE, "iMX : IPU thread started");
 }
 
