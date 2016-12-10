@@ -820,11 +820,18 @@ void CRenderManager::FlipPage(volatile std::atomic_bool& bStop, double pts,
       else if (interlacemethod == VS_INTERLACEMETHOD_RENDER_BOB)
         presentmethod = PRESENT_METHOD_BOB;
       else
+        presentmethod = PRESENT_METHOD_SINGLE;
+
+      if (presentmethod != PRESENT_METHOD_SINGLE)
       {
-        if (!m_pRenderer->WantsDoublePass())
-          presentmethod = PRESENT_METHOD_SINGLE;
-        else
-          presentmethod = PRESENT_METHOD_BOB;
+        /* invert present field */
+        if (invert)
+        {
+          if (sync == FS_BOT)
+            sync = FS_TOP;
+          else
+            sync = FS_BOT;
+        }
       }
     }
   }

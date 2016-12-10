@@ -104,15 +104,6 @@ EINTERLACEMETHOD CRendererIMX::AutoInterlaceMethod()
   return VS_INTERLACEMETHOD_IMX_ADVMOTION_HALF;
 }
 
-bool CRendererIMX::WantsDoublePass()
-{
-  if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_InterlaceMethod ==
-      VS_INTERLACEMETHOD_IMX_ADVMOTION)
-    return true;
-  else
-    return false;
-}
-
 CRenderInfo CRendererIMX::GetRenderInfo()
 {
   CRenderInfo info;
