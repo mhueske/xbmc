@@ -86,7 +86,7 @@ bool CRendererIMX::Supports(EINTERLACEMETHOD method)
     return true;
 
   if(method == VS_INTERLACEMETHOD_IMX_ADVMOTION
-  || method == VS_INTERLACEMETHOD_IMX_ADVMOTION_HALF
+  || method == VS_INTERLACEMETHOD_IMX_WEAVE
   || method == VS_INTERLACEMETHOD_IMX_FASTMOTION
   || method == VS_INTERLACEMETHOD_RENDER_BOB)
     return true;
@@ -101,7 +101,7 @@ bool CRendererIMX::Supports(ESCALINGMETHOD method)
 
 EINTERLACEMETHOD CRendererIMX::AutoInterlaceMethod()
 {
-  return VS_INTERLACEMETHOD_IMX_ADVMOTION_HALF;
+  return VS_INTERLACEMETHOD_IMX_ADVMOTION;
 }
 
 CRenderInfo CRendererIMX::GetRenderInfo()
