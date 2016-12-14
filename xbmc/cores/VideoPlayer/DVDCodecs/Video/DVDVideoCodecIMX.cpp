@@ -27,6 +27,13 @@
 #include "DVDClock.h"
 #include "windowing/WindowingFactory.h"
 #include "cores/VideoPlayer/VideoRenderers/RenderFlags.h"
+#include "utils/StringUtils.h"
+#include "settings/MediaSettings.h"
+#include "cores/VideoPlayer/VideoRenderers/BaseRenderer.h"
+#include "utils/MathUtils.h"
+
+#include "linux/imx/IMX.h"
+#include "libavcodec/avcodec.h"
 
 #include <cassert>
 #include <sys/stat.h>
@@ -1312,8 +1319,10 @@ CIMXContext::CIMXContext()
   , m_bufferCapture(NULL)
   , m_deviceName("/dev/fb1")
 {
-  m_input.clear();
-  m_input.setquotasize(m_fbPages);
+  m_onStartup.Reset();
+  m_waitFlip.Reset();
+  m_flip.clear();
+  m_flip.resize(m_fbPages);
   m_pageCrops = new CRectInt[m_fbPages];
   CLog::Log(LOGDEBUG, "iMX : Allocated %d render buffers\n", m_fbPages);
 
@@ -1674,14 +1683,14 @@ bool CIMXContext::ShowPage(int page, bool shift)
   if (ioctl(m_fbHandle, FBIOPAN_DISPLAY, &m_fbVar) < 0)
   {
     CLog::Log(LOGWARNING, "Panning failed: %s\n", strerror(errno));
-    ret = false;
+    return false;
   }
 
   // Wait for flip
-  if (ret && m_vsync && ioctl(m_fbHandle, FBIO_WAITFORVSYNC, 0) < 0)
+  if (m_vsync && ioctl(m_fbHandle, FBIO_WAITFORVSYNC, 0) < 0)
   {
     CLog::Log(LOGWARNING, "Vsync failed: %s\n", strerror(errno));
-    ret = false;
+    return false;
   }
 
   return true;
