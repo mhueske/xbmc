@@ -34,7 +34,6 @@
 #define RENDER_FLAG_FIELDS (RENDER_FLAG_FIELD0 | RENDER_FLAG_FIELD1)
 
 CRendererIMX::CRendererIMX()
-  : buffer_p(nullptr)
 {
 
 }
@@ -42,8 +41,6 @@ CRendererIMX::CRendererIMX()
 CRendererIMX::~CRendererIMX()
 {
   UnInit();
-  SAFE_RELEASE(buffer_p);
-  g_IMXContext.Clear();
 }
 
 bool CRendererIMX::RenderCapture(CRenderCapture* capture)
@@ -89,10 +86,8 @@ bool CRendererIMX::Supports(EINTERLACEMETHOD method)
   if(method == VS_INTERLACEMETHOD_AUTO)
     return true;
 
-  if(method == VS_INTERLACEMETHOD_IMX_ADVMOTION
-  || method == VS_INTERLACEMETHOD_IMX_WEAVE
-  || method == VS_INTERLACEMETHOD_IMX_FASTMOTION
-  || method == VS_INTERLACEMETHOD_RENDER_BOB)
+  if(method == VS_INTERLACEMETHOD_IMX_FASTMOTION
+  || method == VS_INTERLACEMETHOD_IMX_FASTMOTION_DOUBLE)
     return true;
   else
     return false;
@@ -110,12 +105,12 @@ bool CRendererIMX::Supports(EDEINTERLACEMODE mode)
 
 bool CRendererIMX::Supports(ESCALINGMETHOD method)
 {
-  return method == VS_SCALINGMETHOD_AUTO;
+  return false;
 }
 
 EINTERLACEMETHOD CRendererIMX::AutoInterlaceMethod()
 {
-  return VS_INTERLACEMETHOD_IMX_ADVMOTION;
+  return VS_INTERLACEMETHOD_IMX_FASTMOTION;
 }
 
 CRenderInfo CRendererIMX::GetRenderInfo()
@@ -201,11 +196,7 @@ bool CRendererIMX::RenderUpdateVideoHook(bool clear, DWORD flags, DWORD alpha)
       }
     }
 
-    g_IMXContext.Blit(buffer_p, buffer, fieldFmt);
-
-    SAFE_RELEASE(buffer_p);
-    buffer_p = buffer;
-    buffer_p->Lock();
+    g_IMXContext.Blit(NULL, buffer, fieldFmt);
   }
 
 #if 0
