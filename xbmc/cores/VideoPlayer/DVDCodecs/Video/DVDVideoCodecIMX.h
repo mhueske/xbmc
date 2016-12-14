@@ -105,7 +105,8 @@ public:
   // source_p (previous buffer) is required for de-interlacing
   // modes LOW_MOTION and MED_MOTION.
   void Blit(CIMXBuffer *source_p, CIMXBuffer *source,
-            uint8_t fieldFmt = 0, int targetPage = RENDER_TASK_AUTOPAGE);
+            uint8_t fieldFmt = 0, int targetPage = RENDER_TASK_AUTOPAGE,
+            CRect *dest = NULL);
 
   // Shows a page vsynced
   bool ShowPage(int page, bool shift = false);
@@ -115,7 +116,10 @@ public:
 
   // Captures the current visible frame buffer page and blends it into
   // the passed overlay. The buffer format is BGRA (4 byte)
-  bool CaptureDisplay(unsigned char *&buffer, int iWidth, int iHeight, bool blend = false);
+  void CaptureDisplay(unsigned char *buffer, int iWidth, int iHeight);
+  bool PushCaptureTask(CIMXBuffer *source, CRect *dest);
+  void *GetCaptureBuffer() const { if (m_bufferCapture) return m_bufferCapture->buf_vaddr; else return NULL; }
+  void WaitCapture();
 
   void OnResetDisplay();
 
@@ -145,8 +149,9 @@ private:
 
   bool GetFBInfo(const std::string &fbdev, struct fb_var_screeninfo *fbVar);
 
-  void PrepareTask(IPUTaskPtr &ipu, CIMXBuffer *source_p, CIMXBuffer *source);
-  bool DoTask(IPUTaskPtr &ipu, CRect *dest = nullptr);
+  void PrepareTask(IPUTaskPtr &ipu, CIMXBuffer *source_p, CIMXBuffer *source,
+                   CRect *dest = NULL);
+  bool DoTask(IPUTaskPtr &ipu);
   bool TileTask(IPUTaskPtr &ipu);
 
   void SetFieldData(uint8_t fieldFmt, double fps);
@@ -184,6 +189,7 @@ private:
 public:
   void                          *m_g2dHandle;
   struct g2d_buf                *m_bufferCapture;
+  bool                           m_CaptureDone;
 
   std::string                    m_deviceName;
   double                         m_fps;

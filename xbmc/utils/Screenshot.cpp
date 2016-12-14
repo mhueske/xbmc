@@ -179,7 +179,7 @@ bool CScreenshotSurface::capture()
 #ifdef HAS_IMXVPU
   // Captures the current visible framebuffer page and blends it into the
   // captured GL overlay
-  g_IMXContext.CaptureDisplay(m_buffer, m_width, m_height, true);
+  g_IMXContext.CaptureDisplay(m_buffer, m_width, m_height);
 #endif
 
 #else

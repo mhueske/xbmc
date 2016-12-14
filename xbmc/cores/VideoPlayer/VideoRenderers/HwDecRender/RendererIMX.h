@@ -34,7 +34,7 @@ public:
   CRendererIMX();
   virtual ~CRendererIMX();
   
-  virtual bool RenderCapture(CRenderCapture* capture) override;
+  virtual bool RenderCapture(CRenderCapture* capture);
 
   // Player functions
   virtual void AddVideoPictureHW(DVDVideoPicture &picture, int index);
